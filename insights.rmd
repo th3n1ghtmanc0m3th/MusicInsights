@@ -1,0 +1,32 @@
+---
+title: "Music Insights"
+author: Jay Gohner
+output: html_notebook
+---
+
+First, we need to import tidyverse to handle data manipulation
+
+```{r}
+library("tidyverse")
+
+survey <- read_csv("https://raw.githubusercontent.com/introdsci/MusicSurvey/master/music-survey.csv")
+preferences <- read_csv("https://raw.githubusercontent.com/introdsci/MusicSurvey/master/preferences-survey.csv")
+View(preferences)
+
+num_songs <- nrow(survey)
+songs_vec <- c()
+for(song in num_songs) {
+  song_avg <- avg()
+}
+
+
+
+
+
+
+
+
+
+
+
+```
