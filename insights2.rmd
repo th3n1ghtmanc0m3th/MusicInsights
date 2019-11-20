@@ -1,0 +1,44 @@
+---
+title: "insights2.Rmd"
+author: "Jay Gohner"
+date: "November 14, 2019"
+output: html_document
+---
+
+```{r}
+suppressMessages(library("tidyverse"))
+suppressMessages(library("knitr"))
+suppressMessages(library("caret"))
+purl("insights.rmd", output = "part1.r")
+source("part1.r")
+```
+ 
+ Now we want to add a new column to our persons table. This column will hold the average rating that a person gave to a song.
+ We will use functions from dplyr and the piping operator to create a vector of all the averages of song ratings by pseudonym.
+ Then we will use the piping operator and another dplyr function to add this add our new column to the Person table.
+ 
+```{r}
+avg_song_rating <- Ratings %>% group_by(pseudonym) %>% summarise(avg_song_ratings = mean(rating))
+Person <- inner_join(x = Person, y = avg_song_rating, by = "pseudonym")
+```
+
+We can now pick a variable to predict and build our model. We will subset Person, to get rid of columns like Timestamp and 
+pseudonym generator, that have no effect on the model.
+
+```{r}
+set.seed(123)
+
+select_Person <- select(Person, sex, academic_major, academic_level, year_born, avg_song_ratings)
+
+sample_selection <- createDataPartition(select_Person$avg_song_ratings, p= .75, list=FALSE)
+
+train <- select_Person[sample_selection, ]
+test <- select_Person[-sample_selection, ]
+
+train_model <- lm(avg_song_ratings ~., data = train)
+summary(train_model)
+
+predictions <- train_model %>% predict(test)
+```
+The p-value is terrible and overall the model isn't very good for predicting song ratings. Perhaps more having taken more data 
+about more factors would've given us a more predictable model.
